@@ -25,10 +25,8 @@ export default function RootLayout({
       <body className="">
         <AuthProvider>
           <CartProvider>
-            <Navbar />
             {children}
             <Toaster position="bottom-right" reverseOrder={false} />
-            <Footer />
           </CartProvider>
         </AuthProvider>
       </body>
