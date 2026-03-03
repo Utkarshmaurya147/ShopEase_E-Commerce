@@ -7,6 +7,7 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import api from "@/utils/api";
+import { getImageUrl } from "@/utils/imageHelper";
 
 export default function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +24,9 @@ export default function GlobalSearch() {
         e.preventDefault();
         setIsOpen((open) => !open);
       }
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
@@ -37,10 +41,13 @@ export default function GlobalSearch() {
       }
       setIsTyping(true);
       try {
-        const { data } = await api.get(`/products/all?search=${encodeURIComponent(query)}`);
-        setResults(data);
+        // We add a limit here
+        const { data } = await api.get(`/products/all?search=${encodeURIComponent(query)}&limit=5`);
+        setResults(data.products || []);  //Look inside data.products instead of just data
+        
       } catch (err) {
         console.error(err);
+        setResults([]); // Fallback to empty array
       } finally {
         setIsTyping(false);
       }
@@ -114,7 +121,7 @@ export default function GlobalSearch() {
                   className="w-full flex items-center gap-4 p-4 hover:bg-blue-50 rounded-[24px] transition-all group text-left"
                 >
                   <img
-                    src={product.image}
+                    src={getImageUrl(product.image)}
                     className="w-14 h-14 rounded-2xl object-cover bg-gray-100"
                   />
                   <div className="flex-1">

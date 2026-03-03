@@ -28,7 +28,7 @@ export default function ProductsPage() {
           url += `?search=${encodeURIComponent(searchQuery)}`;
         }
         const res = await api.get(url);
-        setProducts(res.data);
+        setProducts(res.data.products);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {

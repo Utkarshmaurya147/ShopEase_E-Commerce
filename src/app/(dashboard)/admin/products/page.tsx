@@ -22,21 +22,32 @@ export default function AdminProductsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   const fetchProducts = async () => {
     try {
-      const { data } = await api.get("/products/all");
-      setProducts(data);
+      // const { data } = await api.get("/products/all");
+      const { data } = await api.get(
+        `/products/all?page=${page}&limit=10&search=${searchTerm}`,
+      );
+      setProducts(data.products || []);
+      setTotalPages(data.meta?.totalPages || 1);
+      setTotalItems(data.meta?.totalItems || 0);
     } catch (err) {
       toast.error("Failed to load products");
+      setProducts([]);
     } finally {
       setLoading(false);
     }
   };
+
+  // Trigger fetch when page or searchTerm changes
+  useEffect(() => {
+    fetchProducts();
+  }, [page, searchTerm]);
 
   const handleEditClick = (product: any) => {
     setSelectedProduct(product);
@@ -55,7 +66,7 @@ export default function AdminProductsPage() {
     }
   };
 
-  const filteredProducts = products.filter((p: any) =>
+  products.map((p: any) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
@@ -73,7 +84,7 @@ export default function AdminProductsPage() {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
+          className="flex items-center gap-2 bg-blue-600 text-sm text-white px-5 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
         >
           <PlusIcon className="h-5 w-5" />
           Add New Product
@@ -86,8 +97,11 @@ export default function AdminProductsPage() {
         <input
           type="text"
           placeholder="Filter by name..."
-          className="w-full pl-12 pr-4 py-4 bg-white border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-100 font-bold text-gray-900 transition-all"
-          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-12 pr-4 py-4 bg-white border border-gray-100 text-sm rounded-2xl outline-none focus:ring-2 focus:ring-blue-100 font-bold text-gray-900 transition-all"
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPage(1);
+          }}
         />
       </div>
 
@@ -114,7 +128,7 @@ export default function AdminProductsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {filteredProducts.map((product: any) => (
+            {products.map((product: any) => (
               <tr
                 key={product.id}
                 className="hover:bg-gray-50/50 transition-colors group"
@@ -169,8 +183,44 @@ export default function AdminProductsPage() {
           </tbody>
         </table>
 
+        {/* Pagination Controls */}
+        <div className="px-8 py-5 bg-gray-50 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-gray-500 font-medium">
+            Showing page <span className="text-gray-900 font-bold">{page}</span>{" "}
+            of {totalPages}
+            <span className="ml-1 text-[10px] text-gray-400">
+              ({totalItems} total products)
+            </span>
+          </p>
+
+          <div className="flex items-center gap-2">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+            >
+              Previous
+            </button>
+
+            <div className="flex gap-1">
+              {/* Simple logic to show page numbers if you want them later */}
+              <span className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-sm font-black">
+                {page}
+              </span>
+            </div>
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="px-4 py-2 bg-blue-600 text-white border border-blue-600 rounded-xl text-sm font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-blue-100"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+
         {/* Empty State */}
-        {filteredProducts.length === 0 && !loading && (
+        {products.length === 0 && !loading && (
           <div className="py-20 text-center">
             <ArchiveBoxIcon className="h-12 w-12 text-gray-200 mx-auto mb-4" />
             <p className="text-gray-400 font-medium">
