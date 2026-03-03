@@ -7,6 +7,7 @@ import Link from "next/link";
 import api from "@/utils/api";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { getImageUrl } from "@/utils/imageHelper";
 
 export default function CheckoutPage() {
   const { cartItems, clearCart } = useCart();
@@ -384,7 +385,7 @@ export default function CheckoutPage() {
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex gap-5 group">
                     <div className="relative w-20 h-20 flex-shrink-0">
-                        <img src={item.image} className="w-full h-full bg-white rounded-[20px] object-cover border border-gray-100 shadow-sm" alt={item.name} />
+                        <img src={getImageUrl(item.image)} className="w-full h-full bg-white rounded-[20px] object-cover border border-gray-100 shadow-sm" alt={item.name} />
                         <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full border-2 border-white">{item.quantity}</span>
                     </div>
                     <div className="flex-1 flex flex-col justify-center">

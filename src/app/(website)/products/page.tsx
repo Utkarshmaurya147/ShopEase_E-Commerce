@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShoppingBagIcon, SparklesIcon, AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
+import {
+  ShoppingBagIcon,
+  SparklesIcon,
+  AdjustmentsHorizontalIcon,
+} from "@heroicons/react/24/outline";
 import { useCart } from "@/context/CartContext";
 import api from "@/utils/api";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import { getImageUrl } from "@/utils/imageHelper";
 
 export default function ProductsPage() {
   const { addToCart } = useCart();
@@ -55,10 +60,13 @@ export default function ProductsPage() {
               <SparklesIcon className="h-3 w-3" /> Curated Collection
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">
-              {searchQuery ? `Results for "${searchQuery}"` : "Explore Everything"}
+              {searchQuery
+                ? `Results for "${searchQuery}"`
+                : "Explore Everything"}
             </h1>
             <p className="mt-2 text-slate-400 font-medium max-w-md">
-              Discover {products.length} premium products selected for your modern lifestyle.
+              Discover {products.length} premium products selected for your
+              modern lifestyle.
             </p>
           </div>
 
@@ -66,9 +74,15 @@ export default function ProductsPage() {
             <div className="relative">
               <AdjustmentsHorizontalIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <select className="appearance-none rounded-2xl border-none bg-white/5 text-white pl-10 pr-10 py-3 text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 transition-all outline-none backdrop-blur-md cursor-pointer">
-                <option value="newest" className="bg-[#0a1128]">Newest</option>
-                <option value="price-low" className="bg-[#0a1128]">Price: Low</option>
-                <option value="price-high" className="bg-[#0a1128]">Price: High</option>
+                <option value="newest" className="bg-[#0a1128]">
+                  Newest
+                </option>
+                <option value="price-low" className="bg-[#0a1128]">
+                  Price: Low
+                </option>
+                <option value="price-high" className="bg-[#0a1128]">
+                  Price: High
+                </option>
               </select>
             </div>
           </div>
@@ -84,7 +98,7 @@ export default function ProductsPage() {
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[40px] bg-gray-50 border border-gray-100 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-900/5">
                 <Link href={`/products/${product.id}`}>
                   <img
-                    src={product.image}
+                    src={getImageUrl(product.image)}
                     alt={product.name}
                     className="h-full w-full object-cover object-center transition-transform duration-[2000ms] ease-out group-hover:scale-110 group-hover:rotate-1"
                   />
@@ -97,7 +111,12 @@ export default function ProductsPage() {
                   onClick={() => {
                     addToCart(product);
                     toast.success(`${product.name} added!`, {
-                      style: { borderRadius: "20px", background: "#0a1128", color: "#fff", fontWeight: "bold" },
+                      style: {
+                        borderRadius: "20px",
+                        background: "#0a1128",
+                        color: "#fff",
+                        fontWeight: "bold",
+                      },
                       iconTheme: { primary: "#2563eb", secondary: "#fff" },
                     });
                   }}
@@ -132,10 +151,17 @@ export default function ProductsPage() {
         {/* 3. EMPTY STATE */}
         {products.length === 0 && (
           <div className="text-center py-20">
-            <h3 className="text-2xl font-black text-gray-900">No products found</h3>
-            <p className="text-gray-500 mt-2">Try adjusting your search or filters.</p>
-            <Link href="/products" className="inline-block mt-6 text-blue-600 font-bold border-b-2 border-blue-600 pb-1">
-                View all products
+            <h3 className="text-2xl font-black text-gray-900">
+              No products found
+            </h3>
+            <p className="text-gray-500 mt-2">
+              Try adjusting your search or filters.
+            </p>
+            <Link
+              href="/products"
+              className="inline-block mt-6 text-blue-600 font-bold border-b-2 border-blue-600 pb-1"
+            >
+              View all products
             </Link>
           </div>
         )}

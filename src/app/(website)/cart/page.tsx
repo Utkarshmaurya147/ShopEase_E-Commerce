@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { TrashIcon, MinusIcon, PlusIcon, ArrowLeftIcon, ShoppingBagIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
+import { getImageUrl } from "@/utils/imageHelper";
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeItem } = useCart();
@@ -39,7 +40,7 @@ export default function CartPage() {
                 <div key={item.id} className="group flex flex-col sm:flex-row bg-white p-6 rounded-[40px] border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)] transition-all duration-500">
                   <div className="h-32 w-full sm:w-32 flex-shrink-0 overflow-hidden rounded-[30px] bg-gray-50 border border-gray-100">
                     <img 
-                        src={item.image} 
+                        src={getImageUrl(item.image)} 
                         alt={item.name} 
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
                     />

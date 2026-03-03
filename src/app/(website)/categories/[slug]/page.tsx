@@ -11,6 +11,7 @@ import {
 import { useCart } from "@/context/CartContext";
 import api from "@/utils/api";
 import toast from "react-hot-toast";
+import { getImageUrl } from "@/utils/imageHelper";
 
 export default function DepartmentPage() {
   const params = useParams();
@@ -90,7 +91,7 @@ export default function DepartmentPage() {
                 <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[40px] bg-gray-50 border border-gray-100 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-900/5 hover:-translate-y-2">
                   <Link href={`/products/${product.id}`}>
                     <img
-                      src={product.image}
+                      src={getImageUrl(product.image)}
                       alt={product.name}
                       className="h-full w-full object-cover object-center transition-transform duration-[2000ms] ease-out group-hover:scale-110 group-hover:rotate-1"
                     />
@@ -118,7 +119,7 @@ export default function DepartmentPage() {
                     <div className="flex flex-col">
                       <div className="flex items-center gap-1 mb-1">
                         <StarIcon className="h-3 w-3 text-yellow-400 fill-current" />
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">4.9 (Top Rated)</span>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">4.9 (Top Rated)</span>
                       </div>
                       <Link href={`/products/${product.id}`}>
                         <h3 className="text-lg font-black text-gray-900 group-hover:text-blue-600 transition-colors leading-tight">

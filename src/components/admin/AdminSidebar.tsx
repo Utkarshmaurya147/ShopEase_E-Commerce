@@ -6,6 +6,7 @@ import {
   ShoppingBagIcon,
   UserIcon,
   CreditCardIcon,
+  ListCollapseIcon,
   ArrowLeftIcon,
   ChartBarIcon,
 } from "lucide-react";
@@ -15,6 +16,7 @@ const menuItems = [
   { name: "Products", icon: ShoppingBagIcon, path: "/admin/products" },
   { name: "Orders", icon: CreditCardIcon, path: "/admin/orders" },
   { name: "Customers", icon: UserIcon, path: "/admin/users" },
+  { name: "Categories", icon: ListCollapseIcon, path: "/admin/categories" },
   { name: "Analytics", icon: ChartBarIcon, path: "/admin/analytics" },
 ];
 

@@ -41,7 +41,7 @@ export default function RegisterPage() {
       });
       if (res.data.success) {
         toast.success("Account created!");
-        router.push("/login");
+        router.push(`/verify?email=${formData.email}`);
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Registration failed.");

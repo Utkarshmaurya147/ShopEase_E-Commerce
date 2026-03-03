@@ -11,6 +11,7 @@ import {
   CreditCardIcon,
   CubeIcon
 } from "@heroicons/react/24/outline";
+import { getImageUrl } from "@/utils/imageHelper";
 
 const statusStyles: any = {
   pending: "bg-amber-50 text-amber-600 border-amber-100",
@@ -63,9 +64,9 @@ export default function AdminOrdersPage() {
       </div>
 
       <div className="bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-hidden">
-        <table className="w-full text-left border-collapse">
+        <table className=" w-full text-left border-collapse">
           <thead className="bg-gray-50 border-b border-gray-100">
-            <tr>
+            <tr className="">
               <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Order ID</th>
               <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Main Item</th>
               <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Customer</th>
@@ -91,7 +92,7 @@ export default function AdminOrdersPage() {
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-3">
                       <img 
-                        src={order.items?.[0]?.product?.image} 
+                        src={getImageUrl(order.items?.[0]?.product?.image)} 
                         className="h-12 w-12 rounded-xl object-cover border border-gray-100"
                         alt="product"
                       />
@@ -150,7 +151,7 @@ export default function AdminOrdersPage() {
                              {order.items?.map((item: any) => (
                                <div key={item.id} className="flex items-center justify-between group">
                                  <div className="flex items-center gap-4">
-                                   <img src={item.product?.image} className="h-14 w-14 rounded-2xl object-cover" />
+                                   <img src={getImageUrl(item.product?.image)} className="h-14 w-14 rounded-2xl object-cover" />
                                    <div>
                                      <p className="text-sm font-bold text-gray-900">{item.product?.name}</p>
                                      <p className="text-xs font-bold text-gray-400">Qty: {item.quantity} × ${item.price}</p>

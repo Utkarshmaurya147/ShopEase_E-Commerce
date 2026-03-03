@@ -15,6 +15,7 @@ import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
 import { useCart } from "@/context/CartContext";
 import api from "@/utils/api";
 import toast from "react-hot-toast";
+import { getImageUrl } from "@/utils/imageHelper";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -103,7 +104,7 @@ export default function ProductDetailPage() {
           <div className="sticky top-32">
             <div className="relative group aspect-[4/5] rounded-[48px] overflow-hidden bg-gray-50 border border-gray-100 shadow-2xl shadow-blue-900/5">
                <img
-                src={product.image}
+                src={getImageUrl(product.image)}
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-110"
               />

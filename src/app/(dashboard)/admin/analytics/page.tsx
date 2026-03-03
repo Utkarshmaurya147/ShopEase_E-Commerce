@@ -41,7 +41,7 @@ export default function AnalyticsPage() {
       console.error("Analytics fetch failed");
     } finally {
       setLoading(false);
-    }
+    } 
   };
 
   if (loading && !data) {

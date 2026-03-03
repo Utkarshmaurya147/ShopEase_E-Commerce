@@ -1,17 +1,21 @@
-'use client'
+"use client";
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter, useSearchParams} from "next/navigation";
-import api from "@/utils/api"; 
+import { useRouter, useSearchParams } from "next/navigation";
+import api from "@/utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
-import { SparklesIcon, LockClosedIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
+import {
+  SparklesIcon,
+  LockClosedIcon,
+  EnvelopeIcon,
+} from "@heroicons/react/24/outline";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setUser } = useAuth();
@@ -23,14 +27,27 @@ export default function LoginPage() {
 
     try {
       const res = await api.post("/auth/login", { email, password });
+
       if (res.data.success) {
         setUser(res.data.user);
         toast.success(`Welcome back, ${res.data.user.name}!`);
         router.push(callback || "/");
       }
     } catch (error: any) {
-      const message = error.response?.data?.message || "Check your credentials.";
-      toast.error(message);
+      const errorMessage = error.response?.data?.message || "";
+
+      //  Handle Unverified User
+      if (errorMessage.toLowerCase().includes("verify")) {
+        toast.error("Account not verified. Check your email!");
+        // Use 'email' directly from your state instead of 'credentials.email'
+        router.push(`/verify?email=${encodeURIComponent(email)}`);
+      }
+      // Handle Incorrect Credentials
+      else {
+        toast.error(
+          error.response?.data?.message || "Invalid email or password",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -50,8 +67,11 @@ export default function LoginPage() {
             Sign in to <span className="text-blue-500">ShopEase</span>
           </h2>
           <p className="mt-3 text-sm text-slate-400 font-medium">
-            New here?{' '}
-            <Link href="/register" className="font-bold text-blue-400 hover:text-white transition-colors">
+            New here?{" "}
+            <Link
+              href="/register"
+              className="font-bold text-blue-400 hover:text-white transition-colors"
+            >
               Create an account
             </Link>
           </p>
@@ -61,7 +81,9 @@ export default function LoginPage() {
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[40px] p-8 md:p-12 shadow-2xl">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                Email Address
+              </label>
               <div className="relative">
                 <EnvelopeIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
                 <input
@@ -78,8 +100,15 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
-                <Link href="#" className="text-[10px] font-black text-blue-400 uppercase tracking-widest hover:text-white transition-colors">Forgot?</Link>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  Password
+                </label>
+                <Link
+                  href="#"
+                  className="text-[10px] font-black text-blue-400 uppercase tracking-widest hover:text-white transition-colors"
+                >
+                  Forgot?
+                </Link>
               </div>
               <div className="relative">
                 <LockClosedIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
@@ -107,18 +136,32 @@ export default function LoginPage() {
           {/* 3. REFINED SOCIALS */}
           <div className="mt-10">
             <div className="relative flex justify-center text-[10px] uppercase tracking-[0.2em] mb-6">
-              <span className="bg-[#0c142d] px-4 text-slate-500 font-bold">Or connect via</span>
+              <span className="bg-[#0c142d] px-4 text-slate-500 font-bold">
+                Or connect via
+              </span>
               <div className="absolute inset-y-1/2 left-0 w-full border-t border-white/5 -z-10" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <button className="flex items-center justify-center py-3 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all active:scale-95">
-                <img className="h-5 w-5" src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" />
-                <span className="ml-3 text-xs font-bold text-white uppercase tracking-widest">Google</span>
+                <img
+                  className="h-5 w-5"
+                  src="https://www.svgrepo.com/show/355037/google.svg"
+                  alt="Google"
+                />
+                <span className="ml-3 text-xs font-bold text-white uppercase tracking-widest">
+                  Google
+                </span>
               </button>
               <button className="flex items-center justify-center py-3 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all active:scale-95">
-                <img className="h-5 w-5 filter invert" src="https://www.svgrepo.com/show/511330/apple-173.svg" alt="Apple" />
-                <span className="ml-3 text-xs font-bold text-white uppercase tracking-widest">Apple</span>
+                <img
+                  className="h-5 w-5 filter invert"
+                  src="https://www.svgrepo.com/show/511330/apple-173.svg"
+                  alt="Apple"
+                />
+                <span className="ml-3 text-xs font-bold text-white uppercase tracking-widest">
+                  Apple
+                </span>
               </button>
             </div>
           </div>
