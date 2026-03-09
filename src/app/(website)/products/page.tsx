@@ -13,12 +13,23 @@ import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { getImageUrl } from "@/utils/imageHelper";
 
+interface Product {
+  id: string;
+  name: string;
+  price: number | string;
+  image: string;
+  category?: {
+    name: string;
+  };
+}
+
 export default function ProductsPage() {
   const { addToCart } = useCart();
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search");
+
 
   useEffect(() => {
     const getProducts = async () => {

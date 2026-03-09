@@ -78,14 +78,14 @@ export default function Navbar() {
     return () => window.removeEventListener("notificationRead", handleUpdate);
   }, [fetchUnread]);
 
-  // const handleSearch = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (searchQuery.trim()) {
-  //     router.push(`/products?search=${searchQuery}`);
-  //     setSearchQuery("");
-  //     setIsMobileMenuOpen(false);
-  //   }
-  // };
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${searchQuery}`);
+      setSearchQuery("");
+      setIsMobileMenuOpen(false);
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 px-4 py-4 md:px-6">

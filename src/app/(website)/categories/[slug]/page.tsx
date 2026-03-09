@@ -13,12 +13,27 @@ import api from "@/utils/api";
 import toast from "react-hot-toast";
 import { getImageUrl } from "@/utils/imageHelper";
 
+interface Product {
+  id: string;
+  name: string;
+  price: number | string;
+  image: string;
+  // add other fields you use
+}
+
+interface Category {
+  id: string;
+  name: string;
+  description?: string;
+  products: Product[];
+}
+
 export default function DepartmentPage() {
   const params = useParams();
-  const slug = params.slug;
+  const slug = typeof params.slug === 'string' ? params.slug : "";
   const { addToCart } = useCart();
 
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -71,7 +86,7 @@ export default function DepartmentPage() {
                 <SparklesIcon className="h-3 w-3" /> Exclusive Store
               </div>
               <h1 className="text-4xl md:text-4xl font-black text-white tracking-tighter capitalize">
-                {category?.name || slug.replace("-", " ")}
+                {category?.name || slug.replace(/-/g, " ")}
               </h1>
               <p className="mt-4 text-slate-400 font-medium max-w-md leading-relaxed">
                 Experience the finest selection of {filteredProducts.length} premium products curated for the {category?.name || "modern"} collection.

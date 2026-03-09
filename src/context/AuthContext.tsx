@@ -8,6 +8,9 @@ interface User {
   name: string;
   email: string;
   role: string;
+  address?: string; 
+  phone?: string;
+  addressType?: string;
 }
 
 // 2. Define what the Context provides

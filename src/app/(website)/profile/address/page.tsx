@@ -1,8 +1,12 @@
-'use client'
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import api from '@/utils/api';
-import { MapPinIcon, HomeIcon, BriefcaseIcon } from "@heroicons/react/24/outline";
+"use client";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import api from "@/utils/api";
+import {
+  MapPinIcon,
+  HomeIcon,
+  BriefcaseIcon,
+} from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 
 export default function AddressPage() {
@@ -10,27 +14,29 @@ export default function AddressPage() {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    street: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: 'India',
-    addressType: 'Home'
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "India",
+    addressType: "Home",
   });
 
   // Load and split the single address string from the DB into form fields
   useEffect(() => {
     if (user) {
       // Split by comma and trim whitespace to avoid " Ahmedabad" (with leading space)
-      const parts = user.address ? user.address.split(',').map((p: string) => p.trim()) : [];
-      
+      const parts = user.address
+        ? user.address.split(",").map((p: string) => p.trim())
+        : [];
+
       setFormData({
-        street: parts[0] || '',
-        city: parts[1] || '',
-        state: parts[2] || '',
-        zip: parts[3] || '',
-        country: parts[4] || 'India',
-        addressType: user.addressType || 'Home'
+        street: parts[0] || "",
+        city: parts[1] || "",
+        state: parts[2] || "",
+        zip: parts[3] || "",
+        country: parts[4] || "India",
+        addressType: user.addressType || "Home",
       });
     }
   }, [user]);
@@ -38,21 +44,22 @@ export default function AddressPage() {
   const handleSaveAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Combine fields into one string for your single DB column
+
     const fullAddress = `${formData.street}, ${formData.city}, ${formData.state}, ${formData.zip}, ${formData.country}`;
 
     try {
-      const res = await api.put(`/users/update/${user?.id}`, { 
+      const res = await api.put(`/users/update/${user?.id}`, {
         address: fullAddress,
-        addressType: formData.addressType // Ensure your backend saves this too
+        addressType: formData.addressType,
       });
 
-      if (res.data.success) {
-        // Update global context so the whole app knows the new address
-        setUser({ ...user, address: fullAddress, addressType: formData.addressType });
+      if (res.data.success && user) { // ✅ Added 'user' check for type safety
+        setUser({
+          ...user,
+          address: fullAddress,
+          addressType: formData.addressType,
+        });
         toast.success("Shipping address updated successfully!");
-        // ❌ REMOVED: setFormData reset. We want to keep the data visible.
       }
     } catch (err: any) {
       toast.error("Failed to update address");
@@ -80,18 +87,26 @@ export default function AddressPage() {
       <form onSubmit={handleSaveAddress} className="p-8 space-y-6">
         {/* Address Type Selector */}
         <div className="flex gap-4 mb-8">
-          {['Home', 'Office'].map((type) => (
+          {["Home", "Office"].map((type) => (
             <label key={type} className="flex-1 cursor-pointer group">
-              <input 
-                type="radio" 
-                name="addressType" 
-                className="peer hidden" 
+              <input
+                type="radio"
+                name="addressType"
+                className="peer hidden"
                 checked={formData.addressType === type}
-                onChange={() => setFormData({...formData, addressType: type})}
+                onChange={() => setFormData({ ...formData, addressType: type })}
               />
-              <div className="flex items-center justify-center gap-2 p-4 border rounded-xl peer-checked:border-blue-600 peer-checked:bg-blue-50 group-hover:bg-gray-50 transition">
-                {type === 'Home' ? <HomeIcon className="h-5 w-5 text-gray-600" /> : <BriefcaseIcon className="h-5 w-5 text-gray-600" />}
-                <span className="text-sm font-bold text-gray-600">{type}</span>
+              <div className="flex items-center justify-center gap-2 p-4 border rounded-xl peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-600 transition">
+                {type === "Home" ? (
+                  <HomeIcon
+                    className={`h-5 w-5 ${formData.addressType === "Home" ? "text-blue-600" : "text-gray-400"}`}
+                  />
+                ) : (
+                  <BriefcaseIcon
+                    className={`h-5 w-5 ${formData.addressType === "Office" ? "text-blue-600" : "text-gray-400"}`}
+                  />
+                )}
+                <span className="text-sm font-bold"> {type} </span>
               </div>
             </label>
           ))}
@@ -99,58 +114,78 @@ export default function AddressPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
-            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Street Address</label>
-            <input 
-              type="text" 
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">
+              Street Address
+            </label>
+            <input
+              type="text"
               required
               value={formData.street}
-              onChange={(e) => setFormData({...formData, street: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, street: e.target.value })
+              }
               placeholder="House number and street name"
               className="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">City</label>
-            <input 
-              type="text" 
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">
+              City
+            </label>
+            <input
+              type="text"
               required
               value={formData.city}
-              onChange={(e) => setFormData({...formData, city: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, city: e.target.value })
+              }
               placeholder="City"
               className="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">State</label>
-            <input 
-              type="text" 
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">
+              State
+            </label>
+            <input
+              type="text"
               required
               value={formData.state}
-              onChange={(e) => setFormData({...formData, state: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, state: e.target.value })
+              }
               placeholder="State"
               className="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Postal Code</label>
-            <input 
-              type="text" 
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">
+              Postal Code
+            </label>
+            <input
+              type="text"
               required
               value={formData.zip}
-              onChange={(e) => setFormData({...formData, zip: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, zip: e.target.value })
+              }
               placeholder="ZIP Code"
               className="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Country</label>
-            <select 
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">
+              Country
+            </label>
+            <select
               value={formData.country}
-              onChange={(e) => setFormData({...formData, country: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, country: e.target.value })
+              }
               className="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-600 focus:ring-2 focus:ring-blue-500 outline-none bg-[#d1daeb]"
             >
               <option>India</option>
@@ -161,7 +196,7 @@ export default function AddressPage() {
         </div>
 
         <div className="pt-6 border-t border-gray-50 flex justify-end">
-          <button 
+          <button
             type="submit"
             disabled={loading}
             className="bg-[#1b42e0] text-white px-10 py-3 rounded-xl font-bold hover:bg-blue-500 transition disabled:opacity-50"

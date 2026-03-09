@@ -55,7 +55,7 @@ export default function OrderSuccessPage() {
           <div className="grid grid-cols-1 gap-4 mb-10">
             <div className="bg-gray-50/80 rounded-[30px] p-6 text-left border border-gray-100">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Order Reference</p>
-              <p className="text-sm font-black text-gray-900 break-all">#{orderId?.slice(-12).toUpperCase()}</p>
+              <p className="text-sm font-black text-gray-900 break-all">#{String(orderId).slice(-12).toUpperCase()}</p>
             </div>
             
             <div className="flex items-center gap-4 bg-blue-50/50 rounded-[30px] p-6 text-left border border-blue-100">

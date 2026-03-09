@@ -19,16 +19,18 @@ import { getImageUrl } from "@/utils/imageHelper";
 
 export default function ProductDetailPage() {
   const params = useParams();
+  // 1. Build Safety: Ensure ID is a string
+  const productId = typeof params.id === 'string' ? params.id : "";
+  
   const { addToCart } = useCart();
-
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   useEffect(() => {
     const fetchSingleProduct = async () => {
       try {
-        const res = await api.get(`/products/${params.id}`);
+        const res = await api.get(`/products/${productId}`);
         setProduct(res.data);
         checkWishlistStatus(res.data.id);
       } catch (error) {
@@ -38,24 +40,27 @@ export default function ProductDetailPage() {
       }
     };
 
-    const checkWishlistStatus = async (productId) => {
+    const checkWishlistStatus = async (id: string) => {
       try {
         const { data } = await api.get("/wishlists/all");
-        const exists = data.items?.some((item) => item.ProductId === productId);
+        // Consistent property naming (ProductId)
+        const exists = data.items?.some((item: any) => item.ProductId === id);
         setIsWishlisted(exists);
       } catch (err) {
-        // Stay false if unauthorized
+        setIsWishlisted(false);
       }
     };
 
-    if (params.id) fetchSingleProduct();
-  }, [params.id]);
+    if (productId) fetchSingleProduct();
+  }, [productId]);
 
   const handleWishlistToggle = async () => {
     try {
       if (isWishlisted) {
         const { data } = await api.get("/wishlists/all");
-        const itemToDelete = data.items.find((item) => item.productId === product.id);
+        // 2. FIX: Ensure property name matches your backend (ProductId)
+        const itemToDelete = data.items.find((item: any) => item.ProductId === product.id);
+        
         if (itemToDelete) {
           await api.delete(`/wishlists/remove/${itemToDelete.id}`);
           setIsWishlisted(false);
@@ -66,7 +71,7 @@ export default function ProductDetailPage() {
         setIsWishlisted(true);
         toast.success("Saved to Wishlist");
       }
-    } catch (err) {
+    } catch (err: any) {
       if (err.response?.status === 401) toast.error("Please login first");
       else toast.error("Action failed");
     }
@@ -139,7 +144,7 @@ export default function ProductDetailPage() {
             </div>
 
             <p className="text-4xl font-black text-gray-900 mt-8">
-              ${product.price}
+              ${Number(product.price).toLocaleString()}
             </p>
 
             <div className="mt-8 border-t border-gray-100 pt-8">

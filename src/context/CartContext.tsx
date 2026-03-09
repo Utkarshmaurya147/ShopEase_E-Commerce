@@ -1,15 +1,34 @@
-'use client'
-import { createContext, useContext, useState, useEffect } from 'react';
+'use client';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
+// 1. Define the structure of a single item in the cart
+interface CartItem {
+  id: string;
+  name: string;
+  price: number | string;
+  quantity: number;
+  image: string;
+  category?: string | { name: string };
+}
 
-const CartContext = createContext();
+// 2. Define the structure of the context data
+interface CartContextType {
+  cartItems: CartItem[];
+  addToCart: (product: any) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, delta: number) => void;
+  clearCart: () => void;
+  cartCount: number;
+}
 
-export function CartProvider({ children }) {
-  // 1. Initialize state as an empty array
-  const [cartItems, setCartItems] = useState([]);
+// 3. Initialize context with the interface type
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // 2. Load cart from localStorage on mount
+  // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('shopease_cart');
     if (savedCart) {
@@ -22,14 +41,14 @@ export function CartProvider({ children }) {
     setIsInitialized(true);
   }, []);
 
-  // 3. Save cart to localStorage whenever it changes
+  // Save cart to localStorage whenever it changes
   useEffect(() => {
     if (isInitialized) {
       localStorage.setItem('shopease_cart', JSON.stringify(cartItems));
     }
   }, [cartItems, isInitialized]);
 
-  const addToCart = (product) => {
+  const addToCart = (product: any) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
       if (existingItem) {
@@ -37,16 +56,15 @@ export function CartProvider({ children }) {
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      // Ensure we store the 'image' property from your DB
       return [...prevItems, { ...product, quantity: 1 }];
     });
   };
 
-  const removeItem = (id) => {
+  const removeItem = (id: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const updateQuantity = (id, delta) => {
+  const updateQuantity = (id: string, delta: number) => {
     setCartItems((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
@@ -54,13 +72,11 @@ export function CartProvider({ children }) {
     );
   };
 
-  // 4. Helper to clear cart after successful order
   const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem('shopease_cart');
   };
 
-  
   return (
     <CartContext.Provider value={{ 
       cartItems, 
@@ -68,11 +84,18 @@ export function CartProvider({ children }) {
       removeItem, 
       updateQuantity, 
       clearCart,
-      cartCount: cartItems.reduce((acc, item) => acc + item.quantity, 0) // Useful for Navbar badge
+      cartCount: cartItems.reduce((acc, item) => acc + item.quantity, 0)
     }}>
       {children}
     </CartContext.Provider>
   );
 }
 
-export const useCart = () => useContext(CartContext);
+// 4. Custom hook with Type Guard
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error("useCart must be used within a CartProvider");
+  }
+  return context;
+};
